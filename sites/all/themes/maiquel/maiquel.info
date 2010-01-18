@@ -1,0 +1,23 @@
+name = Maiquel Site
+description = Maiquel Site Theme
+
+version = "1.0"
+core = "6.x"
+engine = phptemplate
+
+regions[left] = Left sidebar
+regions[right] = Right sidebar
+regions[content] = Content
+regions[header] = Header
+regions[footer] = Footer
+
+#stylesheets[all][] = system-menus.css
+#stylesheets[all][] = system.css
+
+stylesheets[all][] = css/reset.css
+stylesheets[all][] = css/style.css
+stylesheets[all][] = css/text.css
+stylesheets[all][] = css/960.css
+
+
+#scripts[] = script.js

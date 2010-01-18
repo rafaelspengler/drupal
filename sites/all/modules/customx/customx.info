@@ -1,0 +1,6 @@
+name = Custom Module
+description = Provides customizations...
+core = 6.x
+version = "6.x"
+project = "customx"
+package = Other

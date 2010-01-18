@@ -1,0 +1,18 @@
+# Brazilian Portuguese translation of Drupal (6.2)
+# Copyright (c) 2009 by the Brazilian Portuguese translation team
+# Generated from file: template.php,v 1.16 2007/10/11 09:51:29 goba
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Drupal (6.2)\n"
+"POT-Creation-Date: 2009-02-10 16:03+0000\n"
+"PO-Revision-Date: 2008-01-28 17:42+0000\n"
+"Language-Team: Brazilian Portuguese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: themes/garland/template.php:75,83
+msgid "!datetime — !username"
+msgstr "!datetime — !username"
