@@ -1,5 +1,5 @@
 <?php
-// $Id: nodeblock.module,v 1.10 2009/02/05 20:00:12 rz Exp $
+// $Id: nodeblock.module,v 1.15 2010/01/06 16:46:58 tomot Exp $
 
 /**
  * @file
@@ -91,7 +91,7 @@ function nodeblock_block($op = 'list', $delta = 0, $edit = array()) {
     foreach ($types as $type) {
       if (nodeblock_type_enabled($type)) {
         // Fetch all nodes of this type, excluding translations.
-        $result = db_query('SELECT nid, title FROM {node} WHERE type = "%s" AND status = 1 AND (nid = tnid OR tnid = 0)', $type->type);
+        $result = db_query("SELECT nid, title FROM {node} WHERE type = '%s' AND status = 1 AND (nid = tnid OR tnid = 0)", $type->type);
         while ($node = db_fetch_object($result)) {
           $blocks[$node->nid] = array('info' => $node->title .' (nodeblock)');
         }
@@ -99,8 +99,29 @@ function nodeblock_block($op = 'list', $delta = 0, $edit = array()) {
     }
     return $blocks;
   }
+  elseif ($op == 'configure') {
+    $defaults = variable_get('nodeblock_block_' . $delta, array('teaser' => 0, 'links' => 1));
+    $form['teaser'] = array(
+      '#title' => t('Show only node teaser'),
+      '#type' => 'checkbox',
+      '#default_value' => $defaults['teaser'],
+    );
+    $form['links'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => $defaults['links'],
+      '#title' => t('Include node links for "add comment", "read more" etc.'),
+    );
+    return $form;
+  }
+  else if ($op == 'save') {
+    variable_set('nodeblock_block_' . $delta, array('teaser' => $edit['teaser'], 'links' => $edit['links']));
+  }
   elseif ($op == 'view') {
     $node = node_load($delta);
+    if (!node_access('view', $node)) {
+      return;
+    }
+    $nodeblock_display = variable_get('nodeblock_block_' . $delta, array('teaser' => 0, 'links' => 1));
 
     // if the node type is translatable, try to load the node with the appropriate
     // language from the translation set.
@@ -118,9 +139,11 @@ function nodeblock_block($op = 'list', $delta = 0, $edit = array()) {
       // otherwise we just use the main node
     }
 
-    $block['subject'] = $node->title;
-    // using page arg = TRUE since we want the full content (generally speaking)
-    $block['content'] = node_view($node, FALSE, TRUE, TRUE);
+    // Set a flag so that themes have more context.
+    $node->nodeblock = TRUE;
+    
+    $block['subject'] = check_plain($node->title);
+    $block['content'] = node_view($node, $nodeblock_display['teaser'], TRUE, $nodeblock_display['links']);
 
     return $block;
   }
@@ -157,4 +180,31 @@ function nodeblock_link($type, $node = NULL, $teaser = FALSE) {
   }
 
   return $links;
+}
+
+/**
+ * Implementation of hook_preprocess_node().
+ *
+ * Add node-nodeblock-default to the suggested theme files for all nodeblock
+ * enabled nodes. Note that the template is "unshifted" onto the template files
+ * array. This gives the template file a lower priority than any node-nodetype
+ * templates, but a higher priority than a generic node.tpl.php.
+ */
+function nodeblock_preprocess_node(&$variables) {
+  if ($variables['node']->nodeblock) {
+    array_unshift($variables['template_files'], 'node-nodeblock-default');
+  }
+}
+
+/**
+ * Implementation of hook_theme_registry_alter().
+ *
+ * Add nodeblock path to the 'theme paths' for the 'node' hook.  This allows us
+ * to use node-nodeblock-default.tpl.php from the module directory. Note that 
+ * the path is "unshifted" onto the theme paths array. This puts the module path
+ * before the modules/node path, but since neither of these modules implements
+ * the same templates, there is not problem.
+ */
+function nodeblock_theme_registry_alter(&$registry) {
+  array_unshift($registry['node']['theme paths'], drupal_get_path('module', 'nodeblock'));
 }
