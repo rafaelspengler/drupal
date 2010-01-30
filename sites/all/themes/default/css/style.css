@@ -1,0 +1,14 @@
+#admin-menu { font-size:13px; }
+body{color:#333333;font-family:Georgia,Times,serif!important;font-size:18px!important;}
+h1 h2{font-weight: normal;}
+a:hover{color: #C20103;}
+#header{background-color: #CE070F; border-bottom: 4px solid #F7D680;padding:10px;}
+#header h1{ color: #FFFFFF;font-size:46px;margin:20px 0 0 40px; /*background-image: url(/sites/all/themes/default/img/logo.png);background-repeat: no-repeat; text-indent: -3000em; */}
+#header h2{ color: #F7D680;font-size:36px;margin:-20px 0 10px 40px;}
+#content{clear: both;}
+.block{float:left;clear:none;width:40%; margin:10px 20px;padding:10px;}
+#content h2, #footer h2 {color: #C20103}
+#footer{ background-color:#FBF7F2;border-top:3px solid #F6F2ED;float:left;padding:2px 0 45px;width:100%;}
+#footer #container{margin-left:auto;margin-right:auto;width:925px;}
+#block-ultima-do-twitter, #block-entre-em-contato{float:left;clear:none;width:394px;margin:0 12px}
+ul#lista-como-contatar{padding:0!important;list-style-type:none;}

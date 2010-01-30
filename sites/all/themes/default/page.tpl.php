@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
+
+<?php
+_pathauto_include();
+$path = base_path() . drupal_get_path('theme','default'); 	
+$class = strtolower(pathauto_cleanstring($title));
+?>
+
+<head>
+	<meta name="google-site-verification" content="jnc9hYXvS4KZFt-evHuY7a9IWyy79AT62lAK6qnXNYk" />	
+	<link href="http://www.internacional.com.br/imagens/confronto/internacional.gif" rel="shortcut icon" />
+	<title><?php print $head_title; ?></title>
+	<?php print $head; ?>
+	<?php print $styles; ?>
+
+	<?php 	
+	//se ta na parte de administracao adiciona o css de admin na jogada
+	if (arg(0) == 'admin' || ((arg(0) == 'node' && arg(1) == 'add') ||  (arg(0) == 'node' && arg(2) == 'edit')) ): ?>
+		<style type="text/css" media="screen">
+			@import url("<?php echo $path ?>/css/admin.css");
+			</style>
+	<?php endif ?>
+	<script type="text/javascript"><?php /* Needed to avoid Flash of Unstyled Content in IE */ ?> </script>
+</head>
+
+<body class="<?php print $body_classes; echo ' page-' . $class ?>">
+
+	<div id="header">
+		<div class="container_12 ">
+			<div id="logo">
+				<?php /*if($logo): 				
+					<a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo">
+						<img src="<?php echo check_url($logo) ?>" alt="<?php print t('Home'); ?>" />
+					</a>				
+				 else: */?>
+					<h1>Maiquel Leonel</h1>
+					<h2>web developer</h2>
+			</div>		
+			<?php if($primary_links): ?>
+				<div id="menu">
+					<?php print theme('links', $primary_links, array('class' => 'links primary-links')); ?>
+				</div>
+			<?php endif ?>
+		</div>
+	</div>
+
+	<div id="main" class="container_12">
+		<div id="content" class="grid_12">
+			<?php if (!empty($tabs)): ?>
+				<div class="breadcrumbs">
+					<?php print $breadcrumbs; ?>
+				</div>
+				<div class="tabs">
+					<?php print $tabs; ?>
+				</div>
+			<?php endif; ?>
+			<?php if (!empty($messages)): 
+				print $messages; endif; 
+			?>
+			<?php echo $content ?>
+		</div>
+	</div>
+	<div id="footer">
+		<div id="container">
+			<?php echo $footer ?>
+			<div class="copyright">
+				<?php echo $footer_message ?>
+			</div>
+		</div>
+	</div>
+	<?php print $scripts; ?>
+	<?php print $closure; ?>
+</body>
+</html>
