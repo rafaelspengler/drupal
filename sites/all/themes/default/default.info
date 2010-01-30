@@ -19,5 +19,6 @@ stylesheets[all][] = css/style.css
 stylesheets[all][] = css/text.css
 stylesheets[all][] = css/960.css
 
-
-#scripts[] = script.js
+scripts[] = jquery.validate.min.js
+scripts[] = jquery.form.js
+scripts[] = script.js
