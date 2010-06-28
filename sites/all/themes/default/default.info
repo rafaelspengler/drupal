@@ -1,5 +1,5 @@
-name = Maiquel Site
-description = Maiquel Site Theme
+name = "Default"
+description = "Tema base com o 960.gs integrado"
 
 version = "1.0"
 core = "6.x"

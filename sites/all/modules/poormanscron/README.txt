@@ -1,4 +1,4 @@
-$Id: README.txt,v 1.5 2008/02/06 16:35:17 robloach Exp $
+$Id: README.txt,v 1.5.2.1 2009/05/06 05:21:32 robloach Exp $
 
 Description
 -----------
@@ -22,9 +22,10 @@ This module requires Drupal 4.7 or a later version.
 Installation
 ------------
 
-1) Copy/upload the poormanscron.module to the sites/all/modules directory of
-   your Drupal installation.
-2) Enable the poormanscron module in Drupal (administer -> modules).
+1) Extract the package.
+2) Copy/upload the Poormanscron folder to your sites/all/modules directory of
+   your Drupal installation (e.g. sites/all/modules/poormanscron).
+3) Enable the Poormanscron module in Drupal (administer -> modules).
 
 
 Configuration

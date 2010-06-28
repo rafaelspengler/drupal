@@ -1,5 +1,5 @@
 <?php
-// $Id: module_filter.module,v 1.2.2.8 2009/01/16 19:02:24 greenskin Exp $
+// $Id: module_filter.module,v 1.2.2.23 2010/05/20 17:59:02 greenskin Exp $
 
 /**
  * @file
@@ -29,9 +29,11 @@ function module_filter_perm() {
 function module_filter_menu() {
   $items['admin/settings/module_filter'] = array(
     'title' => 'Module filter',
+    'description' => 'Configure settings for Module Filter.',
     'access arguments' => array('administer module filter'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('module_filter_settings')
+    'page arguments' => array('module_filter_settings'),
+    'file' => 'module_filter.admin.inc'
   );
   $items['module/autocomplete'] = array(
     'access arguments' => array('administer site configuration'),
@@ -46,9 +48,17 @@ function module_filter_menu() {
  */
 function module_filter_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'system_modules' && !isset($form['confirm'])) {
-    $form['module_filter'] = array(
+    $form['module_filter'] = array('#tree' => TRUE);
+    $form['module_filter']['name'] = array(
       '#type' => 'textfield',
-      '#title' => t('Filter list'),
+      '#title' => t('Filter list')
+    );
+    $form['module_filter']['show'] = array(
+      '#type' => 'checkboxes',
+      '#default_value' => array('enabled', 'disabled', 'required', 'unavailable'),
+      '#options' => array('enabled' => t('Enabled'), 'disabled' => t('Disabled'), 'required' => t('Required'), 'unavailable' => t('Unavailable')),
+      '#prefix' => '<div id="module-filter-show-wrapper">',
+      '#suffix' => '</div>'
     );
     if (variable_get('module_filter_autocomplete', 0)) {
       $form['module_filter']['#autocomplete_path'] = 'module/autocomplete';
@@ -74,25 +84,6 @@ function module_filter_theme() {
 /*******************************************************************************
  * Callback Functions, Forms, and Tables
  ******************************************************************************/
-
-/**
- * Settings form for module filter.
- */
-function module_filter_settings() {
-  $form['module_filter_autocomplete'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Autocomplete'),
-    '#description' => t('Enable this to provide autocomplete suggestions of existing module names in the module filter textfield. Currently only works if tabs are disabled below.'),
-    '#default_value' => variable_get('module_filter_autocomplete', 0)
-  );
-  $form['module_filter_tabs'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Tabs'),
-    '#description' => t('Themes module list into tabs.'),
-    '#default_value' => variable_get('module_filter_tabs', 0)
-  );
-  return system_settings_form($form);
-}
 
 function module_filter_autocomplete($string) {
   $files = module_rebuild_cache();
@@ -128,18 +119,21 @@ function theme_module_filter_system_modules($form) {
     return drupal_render($form);
   }
 
+  drupal_add_css(drupal_get_path('module', 'module_filter') .'/css/module_filter.css');
+
   $output = '';
-  if (variable_get('module_filter_tabs', 0)) {
-    drupal_add_css(drupal_get_path('module', 'module_filter') .'/module_filter_tab.css');
-    drupal_add_js(drupal_get_path('module', 'module_filter') .'/module_filter_tab.js');
+  if (variable_get('module_filter_tabs', 1)) {
+    drupal_add_css(drupal_get_path('module', 'module_filter') .'/css/module_filter_tab.css');
+    drupal_add_js(drupal_get_path('module', 'module_filter') .'/js/module_filter_tab.js');
     $form['module_filter']['#size'] = 45;
     $output .= theme('module_filter_system_modules_tabs', $form);
   }
   else {
-    drupal_add_js(drupal_get_path('module', 'module_filter') .'/module_filter.js');
+    drupal_add_js(drupal_get_path('module', 'module_filter') .'/js/module_filter.js');
     $form['module_filter']['#prefix'] = '<div id="module-filter-wrapper" style="display: none;">';
     $form['module_filter']['#suffix'] = '</div>';
     $output = drupal_render($form['module_filter']);
+    $form['#theme'] = 'system_modules';
     $output .= theme('system_modules', $form);
   }
   return $output;
@@ -178,14 +172,12 @@ function theme_module_filter_system_modules_tabs($form) {
   ksort($packages);
 
   // Display packages.
-  $output = '';
   $rows = array();
-  $tabs = array('all' => '<li class="active"><a id="all-tab" class="project-tab" href="">'. t('All') .'</a></li>');
+  $tabs = array('all' => '<li class="active"><a id="all-tab" class="project-tab" href="#all">'. t('All') .'</a></li>');
   foreach ($packages as $package => $modules) {
     $id = strtolower($package);
-    $id = ereg_replace('[^a-z ]', '', $id);
-    $id = str_replace(' ', '-', $id);
-    $id = str_replace('--', '-', $id);
+    // $id = preg_replace('/[^a-z ]\//', '', $id);
+    $id = preg_replace('/([^a-z])([\/(  )])*/', '-', $id);
     foreach ($modules as $key => $module) {
       $row = array();
       $description = drupal_render($form['description'][$key]);
@@ -226,17 +218,19 @@ function theme_module_filter_system_modules_tabs($form) {
         'class' => $id .'-tab-content'
       );
     }
-    $tabs[$id] = '<li><a id="'. $id .'-tab" class="project-tab" href="">'. $package .'</a></li>';
+    $tabs[$id] = '<li><a id="'. $id .'-tab" class="project-tab" href="#'. str_replace('-', '_', $id) .'">'. $package .'</a></li>';
   }
 
   ksort($rows);
+  $output = '<div id="module-filter-wrapper">'.
   $output .= '<div id="module-filter-left">';
   $output .= '<div id="module-filter-tabs"><ul>'. implode($tabs) .'</ul></div>';
   $output .= '<div id="module-filter-submit">'. drupal_render($form['buttons']) .'</div></div>';
-  $output .= '<div id="module-filter-spacer"></div>';
+  // $output .= '<div id="module-filter-spacer"></div>';
   $output .= '<div id="module-filter-right"><div id="module-filter-squeeze">'. drupal_render($form['module_filter']);
   $output .= theme('table', $header, $rows, array('id' => 'projects')) .'</div></div>';
   $output .= '<div class="clear-block"></div>';
+  $output .= '</div>';
 
   $output .= drupal_render($form);
   return $output;

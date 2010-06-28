@@ -1,5 +1,5 @@
 <?php
-// $Id: content_handler_field.inc,v 1.1.2.15 2009/03/30 22:54:16 yched Exp $
+// $Id: content_handler_field.inc,v 1.1.2.18 2010/01/25 23:13:40 markuspetrux Exp $
 
 /**
  * @file
@@ -31,14 +31,16 @@ class content_handler_field extends views_handler_field_node {
     $this->additional_fields['vid'] = array('table' => 'node', 'field' => 'vid');
   }
 
-  function options(&$options) {
-    parent::options($options);
+  function option_definition() {
+    $options = parent::option_definition();
     $field = $this->content_field;
 
     // Override views_handler_field_node's default label
-    $options['label'] = '';
-    $options['label_type'] = 'widget';
-    $options['format'] = 'default';
+    $options['label'] = array('default' => '', 'translatable' => TRUE);
+    $options['label_type'] = array('default' => 'widget');
+    $options['format'] = array('default' => 'default');
+
+    return $options;
   }
 
   /**
@@ -167,7 +169,9 @@ class content_handler_field extends views_handler_field_node {
   }
 
   function render($values) {
-    $field = $this->content_field;
+    // We're down to a single node here, so we can retrieve the actual field
+    // definition for the node type being considered.
+    $field = content_fields($this->content_field['field_name'], $values->{$this->aliases['type']});
     $options = $this->options;
     $db_info = content_database_info($field);
 

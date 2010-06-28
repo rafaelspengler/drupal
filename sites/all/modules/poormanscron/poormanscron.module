@@ -1,5 +1,5 @@
 <?php
-// $Id: poormanscron.module,v 1.21 2008/02/06 16:35:17 robloach Exp $ $Name: DRUPAL-6--1-0 $
+// $Id: poormanscron.module,v 1.21.2.2 2009/05/06 05:07:08 robloach Exp $ $Name: DRUPAL-6--1-1 $
 
 /**
  * @file
@@ -45,35 +45,22 @@ function poormanscron_exit() {
     $saved_messages = drupal_set_message();
 
     // Invoke the cron hooks of all enabled modules.
-    if (variable_get('poormanscron_log_progress', 0) == 1) {
-      // Invoke the cron hooks of all enabled modules and log the progress.
-      $modules = module_list();
-      foreach ($modules as $key => $value) {
-        if (module_hook($key, 'cron')) {
-          $tt = time();
-          module_invoke($key, 'cron');
-          watchdog('cron', "Executed %hook via poormanscron, took %time.", array('%time' => format_interval(time() - $tt, 1) . '.', '%hook' => "${key}_cron"));
-        }
-      }
+    if (drupal_cron_run()) {
+      $message = 'Cron run completed (via poormanscron).';
     }
     else {
-      // Invoke the cron hooks of all enabled modules, no progress logging.
-      module_invoke_all('cron');
+      $message = 'Cron run unsuccessful (via poormanscron).';
     }
 
     // Write a message to the logs if the user wants us to do so.
     if (variable_get('poormanscron_log_cron_runs', 1) == 1) {
-      watchdog('cron', 'Cron run completed (via poormanscron).');
+      watchdog('cron', $message);
     }
 
     $t = time();
 
     // Update the time of the last poormanscron run (this one).
     variable_set('poormanscron_lastrun', $t);
-
-    // Update the $cron_last variable, in order to update the
-    // cron status in admin/settings.
-    variable_set('cron_last', $t);
 
     // Delete any messages added during the cron run (and existing prior
     // messages).

@@ -1,5 +1,5 @@
 <?php
-// $Id: poormanscron.admin.inc,v 1.1 2008/02/06 16:35:17 robloach Exp $
+// $Id: poormanscron.admin.inc,v 1.1.2.1 2008/04/27 09:40:29 robloach Exp $
 
 /**
  * @file
@@ -30,12 +30,6 @@ function poormanscron_admin_settings() {
     '#default_value' => variable_get('poormanscron_log_cron_runs', 1),
     '#options' => array('1' => t('Yes'), '0' => t('No')),
     '#description' => t('If you want to log successful cron runs to the Drupal watchdog, say Yes here. If those messages annoy you, disable them by selecting No.')
-  );
-  $form['logging']['poormanscron_log_progress'] = array(
-    '#type' => 'select', '#title' => t('Log poormanscron progress'),
-    '#default_value' => variable_get('poormanscron_log_progress', 0),
-    '#options' => array('1' => t('Yes'), '0' => t('No')),
-    '#description' => t('If you want to log the progress of a poormanscron run to the Drupal watchdog, say Yes here. If those messages annoy you, disable them by selecting No.')
   );
   return system_settings_form($form);
 }
