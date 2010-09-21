@@ -1,5 +1,5 @@
 .DS_Store
 ._*
-sites/all/themes/**/*
+# sites/all/themes/**/*
 sites/default/files/**/*
 sites/default/settings.php
